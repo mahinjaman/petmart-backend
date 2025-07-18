@@ -23,7 +23,7 @@ const OrderSchema = new Schema<IOrder>(
                 title: String,
                 sku: String,
                 quantity: { type: Number, required: true },
-                price: { type: Number, required: true }, // final price
+                price: { type: Number, required: true },
                 weightVariant: {
                     weight: String,
                     price: Number,
@@ -43,7 +43,7 @@ const OrderSchema = new Schema<IOrder>(
             country: String,
         },
         paymentMethod: {
-            type: String, // e.g. "COD", "Credit Card", "Stripe"
+            type: String,
             required: true,
         },
         paymentStatus: {
