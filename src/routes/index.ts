@@ -1,13 +1,15 @@
-import app from "../app";
+import { Router } from "express";
 import { productRoutes } from "../models/product/product.routes";
-
+const router = Router();
 const routes = [
     {
-        path: "/product",
+        path: "/products",
         route: productRoutes
     }
 ];
 
 routes.forEach(route => {
-    app.use(route.path, route.route)
-})
+    router.use(route.path, route.route)
+});
+
+export const rootRoute = router;

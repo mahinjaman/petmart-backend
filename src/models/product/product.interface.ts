@@ -20,24 +20,12 @@ export interface IProduct {
         url: string;
         alt?: string;
     }[];
-    videos?: {
+    video?: {
         url: string;
         thumbnail?: string;
-    }[];
-    attributes?: {
-        color?: string[];
-        size?: string[];
-        flavor?: string[];
-        breedSize?: string[];
-        petType?: string[];
-        ageGroup?: string[];
     };
-    weightVariants?: {
-        weight: string;
-        price: number;
-        stock: number;
-        sku: string;
-    }[];
+    attributes?: {}[];
+    variants?: {}[];
     featured?: boolean;
     ratings?: {
         average: number;

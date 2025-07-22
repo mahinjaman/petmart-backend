@@ -22,17 +22,17 @@ const ProductSchema = new Schema<IProduct>(
         },
         categories: [
             {
-                type: String, // e.g. "Dog Food", "Toys", "Accessories"
+                type: String,
             },
         ],
-        tags: [String], // e.g. ["natural", "organic", "grain-free"]
+        tags: [String],
         sku: {
             type: String,
             unique: true,
         },
         price: {
             original: { type: Number, required: true },
-            sale: { type: Number }, // if discounted
+            sale: { type: Number },
         },
         stock: {
             type: Number,
@@ -48,28 +48,29 @@ const ProductSchema = new Schema<IProduct>(
                 alt: String,
             },
         ],
-        videos: [
-            {
-                url: String,
-                thumbnail: String,
+        video: {
+            type: {
+                url: {
+                    type: String,
+                    required: false
+                },
+                thumbnail: {
+                    type: String,
+                    required: false
+                }
             },
-        ],
-        attributes: {
-            color: [String],
-            size: [String],
-            flavor: [String], // for food/treats
-            breedSize: [String], // small, medium, large breeds
-            petType: [String], // e.g. dog, cat
-            ageGroup: [String], // puppy, adult, senior
+            required: false,
+            default: {}
         },
-        weightVariants: [
-            {
-                weight: String, // e.g. "1kg", "5kg"
-                price: Number,
-                stock: Number,
-                sku: String,
-            },
-        ],
+
+        attributes: {
+            type: Array,
+            default: []
+        },
+        variants: {
+            type: Array,
+            default: []
+        },
         featured: {
             type: Boolean,
             default: false,
