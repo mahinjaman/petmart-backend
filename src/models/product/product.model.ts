@@ -1,4 +1,4 @@
-import { model, Schema } from "mongoose";
+import { Model, model, Schema } from "mongoose";
 import { IProduct } from "./product.interface";
 
 
@@ -7,6 +7,10 @@ const ProductSchema = new Schema<IProduct>(
         title: {
             type: String,
             required: true,
+        },
+        url: {
+            type: String,
+            required: false,
         },
         slug: {
             type: String,
@@ -98,6 +102,34 @@ const ProductSchema = new Schema<IProduct>(
     },
     { timestamps: true }
 );
+
+ProductSchema.pre('save', async function (next) {
+    if (this.isModified('title') || !this.slug || !this.url) {
+        const baseSlug = this.title
+            .toString()
+            .toLowerCase()
+            .trim()
+            .replace(/[^a-z0-9\s-]/g, '')
+            .replace(/\s+/g, '-')
+            .replace(/-+/g, '-')
+            .replace(/^-|-$/g, '');
+
+        let slug = baseSlug;
+        let counter = 1;
+
+        const Product = this.constructor as Model<IProduct>;
+
+        while (await Product.exists({ slug })) {
+            slug = `${baseSlug}-${counter}`;
+            counter++;
+        }
+
+        this.slug = slug;
+        this.url = slug;
+    }
+
+    next();
+});
 
 
 export const Product = model<IProduct>("Product", ProductSchema)

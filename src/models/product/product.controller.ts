@@ -23,11 +23,10 @@ import { creacreateProuctDataIntoDb, getAllProductIntoDb, getSpecificProductData
  * @returns {Promise<void>} Sends a paginated list of products or error message
  */
 export const getAllProduct = catchAsync(async (req: Request, res: Response) => {
-    const page = parseInt(req.params?.page);
-    const limit = parseInt(req.params?.limit);
-    const search = req.params?.search;
-
-    if (isNaN(page) || isNaN(limit)) {
+    const { page, limit, search } = req.query as { page: string, limit: string, search?: string };
+    const pareseedPage = parseInt(page);
+    const pareseedLimit = parseInt(limit);
+    if (isNaN(pareseedPage) || isNaN(pareseedLimit)) {
         return sendResponse(res, {
             success: true,
             statusCode: 400,
@@ -36,7 +35,7 @@ export const getAllProduct = catchAsync(async (req: Request, res: Response) => {
         });
     }
 
-    if (search.length > 20) {
+    if (search && search.length > 20) {
         return sendResponse(res, {
             success: true,
             statusCode: 200,
@@ -44,7 +43,9 @@ export const getAllProduct = catchAsync(async (req: Request, res: Response) => {
             data: null
         })
     }
-    const result = await getAllProductIntoDb({ page, limit, search });
+
+    const result = await getAllProductIntoDb({ page: pareseedPage, limit: pareseedLimit, search: search || "" });
+
     sendResponse(res, {
         success: true,
         statusCode: 201,
@@ -71,7 +72,7 @@ export const getAllProduct = catchAsync(async (req: Request, res: Response) => {
  * @returns {Promise<void>} Sends JSON response with product details or error message
  */
 export const getSpecificProductData = catchAsync(async (req: Request, res: Response) => {
-    if (!req.query.productId) {
+    if (!req.params?.url) {
         sendResponse(res, {
             success: true,
             statusCode: 200,
@@ -79,7 +80,7 @@ export const getSpecificProductData = catchAsync(async (req: Request, res: Respo
             data: null
         })
     }
-    const result = await getSpecificProductDataIntoDb(req.params.productId);
+    const result = await getSpecificProductDataIntoDb(req?.params?.url);
     sendResponse(res, {
         success: true,
         statusCode: 200,
@@ -145,6 +146,7 @@ export const updateProductData = catchAsync(async (req: Request, res: Response) 
 
 export const createProduct = catchAsync(async (req: Request, res: Response) => {
     const productData = req.body;
+
     const result = await creacreateProuctDataIntoDb(productData);
     sendResponse(res, {
         success: true,

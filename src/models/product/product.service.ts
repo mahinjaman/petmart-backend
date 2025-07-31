@@ -1,5 +1,7 @@
 import { IProduct } from './product.interface';
 import { Product } from "./product.model"
+import { createProductValidationSchema } from './product.validation';
+import { z } from 'zod';
 
 
 /**
@@ -59,8 +61,8 @@ export const getAllProductIntoDb = async ({ page, limit, search }: { page: numbe
  * const product = await getSpecificProductDataIntoDb("60f7f0c5b8d6c2123c4f1234");
  */
 
-export const getSpecificProductDataIntoDb = async (id: string) => {
-    const result = await Product.findById(id);
+export const getSpecificProductDataIntoDb = async (url: string) => {
+    const result = await Product.findOne({ url });
     if (!result) {
         throw new Error("Oops! We couldn't find the product. Please try again with a valid product.");
     }
@@ -68,9 +70,39 @@ export const getSpecificProductDataIntoDb = async (id: string) => {
 };
 
 
+/**
+ * Updates a product in the database by its ID.
+ *
+ * This function validates the update payload, ensures only allowed fields are updated,
+ * and returns the updated product document. Throws an error if the product is not found.
+ *
+ * @param {string} productId - The MongoDB ObjectId of the product to update.
+ * @param {Partial<IProduct>} data - The fields to update.
+ * @returns {Promise<Object>} The updated product document.
+ * @throws {Error} If the product is not found or validation fails.
+ */
+export const updateProductDataIntoDb = async (productId: string, data: Partial<IProduct>) => {
+    // Remove fields that should not be updated
+    const forbiddenFields = ['_id', 'createdAt', 'updatedAt'];
+    forbiddenFields.forEach(field => { delete (data as any)[field]; });
 
-export const updateProductDataIntoDb = async (productId: string, data: IProduct) => {
-    const result = ""
+    // Use a partial schema for updates
+    const updateSchema = createProductValidationSchema.partial();
+    const parseResult = updateSchema.safeParse(data);
+    if (!parseResult.success) {
+        throw new Error('Validation failed: ' + JSON.stringify(parseResult.error.format()));
+    }
+
+    // Use $set to only update provided fields
+    const result = await Product.findByIdAndUpdate(
+        productId,
+        { $set: data },
+        { new: true, runValidators: true }
+    );
+    if (!result) {
+        throw new Error("Oops! We couldn't find the product to update. Please try again with a valid product ID.");
+    }
+    return result;
 }
 
 
