@@ -68,6 +68,13 @@ export const createProductValidationSchema = z.object({
         .refine(val => val === undefined || typeof val === 'boolean', {
             message: 'inStock must be a boolean value if provided.',
         }),
+    productThumb: z.object({
+        url: z.string().url('Product thumbnail URL must be a valid URL.'),
+        alt: z.string().optional()
+            .refine(val => val === undefined || typeof val === 'string', {
+                message: 'Product thumbnail alt text must be a string if provided.',
+            }),
+    }),
 
     images: z.array(z.object({
         url: z.string()

@@ -23,9 +23,12 @@ import { creacreateProuctDataIntoDb, getAllProductIntoDb, getSpecificProductData
  * @returns {Promise<void>} Sends a paginated list of products or error message
  */
 export const getAllProduct = catchAsync(async (req: Request, res: Response) => {
-    const { page, limit, search } = req.query as { page: string, limit: string, search?: string };
+
+    const { page, limit, search, categories } = req.query as { page: string, limit: string, search?: string, categories?: string };
+    const filterCategories = categories && categories.split(",");
     const pareseedPage = parseInt(page);
     const pareseedLimit = parseInt(limit);
+
     if (isNaN(pareseedPage) || isNaN(pareseedLimit)) {
         return sendResponse(res, {
             success: true,
@@ -44,7 +47,7 @@ export const getAllProduct = catchAsync(async (req: Request, res: Response) => {
         })
     }
 
-    const result = await getAllProductIntoDb({ page: pareseedPage, limit: pareseedLimit, search: search || "" });
+    const result = await getAllProductIntoDb({ page: pareseedPage, limit: pareseedLimit, search: search || "", categories: filterCategories || [] });
 
     sendResponse(res, {
         success: true,

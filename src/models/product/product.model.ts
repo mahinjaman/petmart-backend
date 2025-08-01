@@ -46,6 +46,10 @@ const ProductSchema = new Schema<IProduct>(
             type: Boolean,
             default: true,
         },
+        productThumb: {
+            url: { type: String, required: true },
+            alt: { type: String, required: false },
+        },
         images: [
             {
                 url: String,
@@ -103,6 +107,7 @@ const ProductSchema = new Schema<IProduct>(
     { timestamps: true }
 );
 
+
 ProductSchema.pre('save', async function (next) {
     if (this.isModified('title') || !this.slug || !this.url) {
         const baseSlug = this.title
@@ -131,5 +136,43 @@ ProductSchema.pre('save', async function (next) {
     next();
 });
 
+ProductSchema.pre('findOneAndUpdate', async function (next) {
+    const update: any = this.getUpdate();
+
+    if (!update) return next();
+
+    // Check if title is being updated or slug/url is missing
+    if (update.title || !update.slug || !update.url) {
+        const baseTitle = update.title || (await this.model.findOne(this.getQuery()))?.title;
+
+        if (!baseTitle) return next();
+
+        const baseSlug = baseTitle
+            .toString()
+            .toLowerCase()
+            .trim()
+            .replace(/[^a-z0-9\s-]/g, '')
+            .replace(/\s+/g, '-')
+            .replace(/-+/g, '-')
+            .replace(/^-|-$/g, '');
+
+        let slug = baseSlug;
+        let counter = 1;
+
+        const Product = this.model;
+
+        while (await Product.exists({ slug })) {
+            slug = `${baseSlug}-${counter}`;
+            counter++;
+        }
+
+        update.slug = slug;
+        update.url = slug;
+
+        this.setUpdate(update);
+    }
+
+    next();
+});
 
 export const Product = model<IProduct>("Product", ProductSchema)

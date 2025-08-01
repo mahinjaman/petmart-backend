@@ -20,20 +20,25 @@ import { z } from 'zod';
  * @example
  * const products = await getAllProductIntoDb({ page: 1, limit: 10, search: "dog" });
  */
-export const getAllProductIntoDb = async ({ page, limit, search }: { page: number, limit: number, search: string }) => {
+export const getAllProductIntoDb = async ({ page, limit, search, categories }: { page: number, limit: number, search: string, categories: string[] }) => {
     const skip = (page - 1) * limit;
-    const searchRegex = new RegExp(search, "i")
-    const query = search ? {
-        $or: [
+    const searchRegex = new RegExp(search, "i");
+    const query: any = {};
+
+    if (search) {
+        query.$or = [
             { title: { $regex: searchRegex } },
             { description: { $regex: searchRegex } },
             { brand: { $regex: searchRegex } },
-            { category: { $regex: searchRegex } },
             { tags: { $regex: searchRegex } },
             { attributes: { $regex: searchRegex } },
             { sku: { $regex: searchRegex } },
-        ]
-    } : {}
+        ];
+    }
+
+    if (categories?.length) {
+        query.categories = { $all: categories };
+    }
     const result = await Product.aggregate([
         {
             $match: query

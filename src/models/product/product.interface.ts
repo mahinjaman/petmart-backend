@@ -1,8 +1,8 @@
 export interface IProduct {
     _id?: string;
     title: string;
-    url: string;
-    slug: string;
+    url?: string;
+    slug?: string;
     brand?: string;
     description?: {
         short?: string;
@@ -17,6 +17,10 @@ export interface IProduct {
     };
     stock: number;
     inStock: boolean;
+    productThumb: {
+        url: string;
+        alt?: string;
+    };
     images: {
         url: string;
         alt?: string;

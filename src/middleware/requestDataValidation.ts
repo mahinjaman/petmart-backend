@@ -5,6 +5,7 @@ import { AppError } from '../error/AppError';
 export const requestDataValidation = (validationSchema: any): RequestHandler => {
     return (req: Request, res: Response, next: NextFunction) => {
         const data = req.body;
+
         if (!data) {
             return next(new AppError(400, 'Product data is required'));
         }
