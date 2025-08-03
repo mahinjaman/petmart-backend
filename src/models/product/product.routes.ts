@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { createProduct, getAllProduct, getSpecificProductData, updateProductData } from "./product.controller";
+import { createProduct, getAllProduct, getFeaturedProducts, getSpecificProductData, updateProductData } from "./product.controller";
 import { requestDataValidation } from "../../middleware/requestDataValidation";
 import { createProductValidationSchema } from "./product.validation";
 
@@ -11,5 +11,6 @@ router.get('/', getAllProduct);
 router.get('/:url', getSpecificProductData);
 router.patch('/:productId', requestDataValidation(createProductValidationSchema), updateProductData);
 router.post("/", requestDataValidation(createProductValidationSchema), createProduct);
+router.get('/featured', getFeaturedProducts);
 
 export const productRoutes = router;

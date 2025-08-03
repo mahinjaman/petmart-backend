@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import { catchAsync } from "../../features/catchAsync";
 import { sendResponse } from "../../features/sendResponse";
-import { creacreateProuctDataIntoDb, getAllProductIntoDb, getSpecificProductDataIntoDb, updateProductDataIntoDb } from "./product.service";
+import { creacreateProuctDataIntoDb, getAllProductIntoDb, getFeaturedProductsFromDb, getSpecificProductDataIntoDb, updateProductDataIntoDb } from "./product.service";
 
 /**
  * @description
@@ -24,7 +24,7 @@ import { creacreateProuctDataIntoDb, getAllProductIntoDb, getSpecificProductData
  */
 export const getAllProduct = catchAsync(async (req: Request, res: Response) => {
 
-    const { page, limit, search, categories } = req.query as { page: string, limit: string, search?: string, categories?: string };
+    const { page, limit, search, categories, sort, brand } = req.query as { page: string, limit: string, search?: string, categories?: string, sort?: string, brand?: string };
     const filterCategories = categories && categories.split(",");
     const pareseedPage = parseInt(page);
     const pareseedLimit = parseInt(limit);
@@ -47,7 +47,7 @@ export const getAllProduct = catchAsync(async (req: Request, res: Response) => {
         })
     }
 
-    const result = await getAllProductIntoDb({ page: pareseedPage, limit: pareseedLimit, search: search || "", categories: filterCategories || [] });
+    const result = await getAllProductIntoDb({ page: pareseedPage, limit: pareseedLimit, search: search || "", categories: filterCategories || [], sort: sort || "", brand: brand || "" });
 
     sendResponse(res, {
         success: true,
@@ -155,6 +155,33 @@ export const createProduct = catchAsync(async (req: Request, res: Response) => {
         success: true,
         statusCode: 201,
         message: "Product data created successful",
+        data: result
+    })
+})
+
+
+/**
+ * @description
+ * Controller to retrieve featured products from the database.
+ * 
+ * This function handles the retrieval of featured products and sends them in the response.
+ * It uses the `getFeaturedProductsFromDb` service function to fetch the data.
+ * 
+ * @route GET /api/products/featured
+ * @access Public or Protected (depending on middleware)
+ * 
+ * @param {Request} req - Express request object
+ * @param {Response} res - Express response object
+ * 
+ * @returns {Promise<void>} Sends a JSON response with featured products
+ */
+
+export const getFeaturedProducts = catchAsync(async (req: Request, res: Response) => {
+    const result = await getFeaturedProductsFromDb();
+    sendResponse(res, {
+        success: true,
+        statusCode: 200,
+        message: "Featured products retrieved successfully.",
         data: result
     })
 })
