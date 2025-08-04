@@ -1,7 +1,9 @@
+import { error } from 'console';
 import { IProduct } from './product.interface';
 import { Product } from "./product.model"
 import { createProductValidationSchema } from './product.validation';
-import { z } from 'zod';
+import { object, z } from 'zod';
+import mongoose from 'mongoose';
 
 
 /**
@@ -64,7 +66,23 @@ export const getAllProductIntoDb = async ({ page, limit, search, categories, sor
         { $limit: limit }
     );
 
-    const result = await Product.aggregate(pipeline);
+    if (brand) {
+        pipeline.push(
+            { $match: { brand: brand } }
+        )
+    }
+
+    const result = await Product.aggregate(pipeline).project({
+        url: 1,
+        title: 1,
+        brand: 1,
+        price: 1,
+        rating: 1,
+        reviews: 1,
+        productThumb: 1,
+        badge: 1,
+        inStock: 1,
+    });
     const productsBrands = await Product.aggregate([
         {
             $match: query
@@ -149,19 +167,124 @@ export const creacreateProuctDataIntoDb = async (productData: IProduct) => {
 }
 
 
-
 /**
- * Retrieves featured products from the database.
+ * Retrieves a paginated list of products from the database with optional full-text search.
  *
- * This function fetches products that are marked as featured. It uses Mongoose's `find` method
- * to filter products based on the `featured` field.
+ * This function uses MongoDB aggregation to perform pagination and filtering. 
+ * If a search term is provided, it searches across multiple fields using case-insensitive regular expressions.
  *
- * @returns {Promise<Array<Object>>} A promise that resolves to an array of featured product documents.
+ * @param {Object} params - The parameters for fetching products.
+ * @param {number} params.page - The current page number (1-based).
+ * @param {number} params.limit - The number of products to retrieve per page.
+ * @param {string} params.search - The search keyword to filter products by title, description, brand, category, tags, or attributes.
+ * 
+ * @returns {Promise<Array<Object>>} A promise that resolves to an array of matched product documents.
  *
  * @example
- * const featuredProducts = await getFeaturedProductsFromDb();
+ * const products = await getAllProductIntoDb({ page: 1, limit: 10, search: "dog" });
  */
-export const getFeaturedProductsFromDb = async (): Promise<IProduct[]> => {
-    const result = await Product.find({ featured: true });
+export const getFeaturedProductsIntoDb = async ({ page, limit, search, categories, sort, brand }: { page: number, limit: number, search: string, categories: string[], sort: string, brand: string }) => {
+    const skip = (page - 1) * limit;
+    const searchRegex = new RegExp(search, "i");
+    const query: any = {};
+
+    if (search) {
+        query.$or = [
+            { title: { $regex: searchRegex } },
+            { description: { $regex: searchRegex } },
+            { brand: { $regex: brand } },
+            { tags: { $regex: searchRegex } },
+            { attributes: { $regex: searchRegex } },
+            { sku: { $regex: searchRegex } },
+        ];
+    }
+
+    if (categories?.length) {
+        query.categories = { $all: categories };
+    }
+    let sortFields: any = {};
+
+    if (sort) {
+        sortFields = sort.split(',').reduce((acc: any, field: any) => {
+            const [key, order] = field.split(':');
+            acc[key] = order === 'desc' ? -1 : 1;
+            return acc;
+        }, {});
+    }
+
+    let pipeline: any = [
+        { $match: query },
+        { $skip: skip },
+        { $limit: limit },
+        { $match: { featured: true } }
+    ]
+    if (Object.keys(sortFields).length > 0) {
+        pipeline.push({ $sort: sortFields });
+    }
+
+    // ✅ Add pagination
+    pipeline.push(
+        { $skip: skip },
+        { $limit: limit }
+    );
+
+    const result = await Product.aggregate(pipeline).project({
+        url: 1,
+        title: 1,
+        brand: 1,
+        price: 1,
+        rating: 1,
+        reviews: 1,
+        productThumb: 1,
+        badge: 1,
+        inStock: 1,
+    });
+    const productsBrands = await Product.aggregate([
+        {
+            $match: query
+        },
+        {
+            $group: {
+                _id: "$brand",
+                count: { $sum: 1 }
+            }
+        }
+    ]);
+    const totalCount = await Product.countDocuments(query);
+    const totalPages = Math.ceil(totalCount / limit);
+    return { productsBrands, result, totalCount, totalPages };
+}
+
+
+export const getIdsProductIntoDb = async (ids: string[]) => {
+    const objectIds = ids.map(id => {
+        try {
+            return new mongoose.Types.ObjectId(id);
+        } catch (err) {
+            return null;
+        }
+    }).filter(Boolean);
+
+    const result = await Product.aggregate([
+        { $match: { _id: { $in: objectIds } } },
+        {
+            $project: {
+                url: 1,
+                title: 1,
+                brand: 1,
+                price: 1,
+                rating: 1,
+                reviews: 1,
+                productThumb: 1,
+                badge: 1,
+                inStock: 1,
+            }
+        }
+    ]);
+
+    if (!result || result.length === 0) {
+        throw new Error("Product data not found");
+    }
+
     return result;
 };

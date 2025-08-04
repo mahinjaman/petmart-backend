@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import { catchAsync } from "../../features/catchAsync";
 import { sendResponse } from "../../features/sendResponse";
-import { creacreateProuctDataIntoDb, getAllProductIntoDb, getFeaturedProductsFromDb, getSpecificProductDataIntoDb, updateProductDataIntoDb } from "./product.service";
+import { creacreateProuctDataIntoDb, getAllProductIntoDb, getFeaturedProductsIntoDb, getIdsProductIntoDb, getSpecificProductDataIntoDb, updateProductDataIntoDb } from "./product.service";
 
 /**
  * @description
@@ -160,28 +160,84 @@ export const createProduct = catchAsync(async (req: Request, res: Response) => {
 })
 
 
+
 /**
  * @description
- * Controller to retrieve featured products from the database.
+ * Controller to retrieve all featured products with pagination and optional search functionality.
  * 
- * This function handles the retrieval of featured products and sends them in the response.
- * It uses the `getFeaturedProductsFromDb` service function to fetch the data.
+ * Responsibilities:
+ * 1. Extracts `page`, `limit`, and `search` parameters from the request.
+ * 2. Validates `page` and `limit` to ensure they are valid numbers.
+ * 3. Ensures the `search` input (if provided) does not exceed the maximum allowed length.
+ * 4. Calls the service function `getAllProductIntoDb` to fetch paginated product data.
+ * 5. Sends a structured API response with the retrieved products.
  * 
- * @route GET /api/products/featured
- * @access Public or Protected (depending on middleware)
+ * @route GET /api/products/:page/:limit/:search?
+ * @access Public or Protected (based on middleware)
  * 
- * @param {Request} req - Express request object
- * @param {Response} res - Express response object
+ * @param {Request} req - Express request object containing pagination and optional search parameters
+ * @param {Response} res - Express response object used to send the data
  * 
- * @returns {Promise<void>} Sends a JSON response with featured products
+ * @returns {Promise<void>} Sends a paginated list of products or error message
  */
-
 export const getFeaturedProducts = catchAsync(async (req: Request, res: Response) => {
-    const result = await getFeaturedProductsFromDb();
+
+    const { page, limit, search, categories, sort, brand } = req.query as { page: string, limit: string, search?: string, categories?: string, sort?: string, brand?: string };
+    const filterCategories = categories && categories.split(",");
+    const pareseedPage = parseInt(page);
+    const pareseedLimit = parseInt(limit);
+
+    if (isNaN(pareseedPage) || isNaN(pareseedLimit)) {
+        return sendResponse(res, {
+            success: true,
+            statusCode: 400,
+            message: "Page and Limit should be number",
+            data: null
+        });
+    }
+
+    if (search && search.length > 20) {
+        return sendResponse(res, {
+            success: true,
+            statusCode: 200,
+            message: "search input must be within 20 chearecters!",
+            data: null
+        })
+    }
+
+    const result = await getFeaturedProductsIntoDb({ page: pareseedPage, limit: pareseedLimit, search: search || "", categories: filterCategories || [], sort: sort || "", brand: brand || "" });
+
+    sendResponse(res, {
+        success: true,
+        statusCode: 201,
+        message: "Everything's ready—your data is here!",
+        data: result
+    })
+})
+
+
+export const getIdsProduct = catchAsync(async (req: Request, res: Response) => {
+    let idsArr: any[] = [];
+
+    if (Array.isArray(req.query.ids)) {
+        idsArr = req.query.ids;
+    } else if (typeof req.query.ids === "string" && req.query.ids.trim() !== "") {
+        idsArr = req.query.ids.split(",");
+    }
+    if (!idsArr) {
+        return sendResponse(res, {
+            success: true,
+            statusCode: 200,
+            message: "Please enter valid ids!",
+            data: null
+        })
+    }
+    const result = await getIdsProductIntoDb(idsArr);
     sendResponse(res, {
         success: true,
         statusCode: 200,
-        message: "Featured products retrieved successfully.",
+        message: "Everything's ready—your data is here!",
         data: result
     })
+
 })
