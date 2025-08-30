@@ -3,6 +3,7 @@ import { GlobalErrorHandler } from "./error/GlobalErrorHandler";
 import { notFound } from "./error/notFound";
 import { rootRoute } from "./routes";
 import cors from "cors";
+import path from "path";
 const app = express();
 
 
@@ -23,5 +24,6 @@ app.use("/api/v1", rootRoute);
 app.use(GlobalErrorHandler);
 // not found handler
 app.use(notFound);
-
+app.use("/images", express.static(path.join(__dirname, "../src/images")));
+app.use("/videos", express.static(path.join(__dirname, "../src/videos")));
 export default app;
