@@ -224,7 +224,6 @@ export const getFeaturedProductsIntoDb = async ({ page, limit, search, categorie
         pipeline.push({ $sort: sortFields });
     }
 
-    // ✅ Add pagination
     pipeline.push(
         { $skip: skip },
         { $limit: limit }
@@ -260,6 +259,7 @@ export const getFeaturedProductsIntoDb = async ({ page, limit, search, categorie
 
 
 export const getIdsProductIntoDb = async (ids: string[]) => {
+
     const objectIds = ids.map(id => {
         try {
             return new mongoose.Types.ObjectId(id);
