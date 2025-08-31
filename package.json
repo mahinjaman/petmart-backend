@@ -10,13 +10,17 @@
   },
   "dependencies": {
     "@types/multer": "^2.0.0",
+    "add": "^2.0.6",
     "axios": "^1.11.0",
     "cors": "^2.8.5",
     "dotenv": "^17.2.0",
     "express": "^5.1.0",
+    "global": "^4.4.0",
     "mongoose": "^8.16.4",
     "multer": "^2.0.2",
     "typescript": "^5.8.3",
+    "vercel": "^46.1.1",
+    "yarn": "^1.22.22",
     "zod": "^4.0.5"
   },
   "devDependencies": {
