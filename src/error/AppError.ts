@@ -1,6 +1,6 @@
-class AppError extends Error {
+export class AppError extends Error {
     public StatusCode: number;
-    constructor(StatusCode: number, message: string, stack: "") {
+    constructor(StatusCode: number, message: string, stack?: "") {
         super(message);
         this.StatusCode = StatusCode;
         if (stack) {

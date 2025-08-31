@@ -1,7 +1,8 @@
 export interface IProduct {
     _id?: string;
     title: string;
-    slug: string;
+    url?: string;
+    slug?: string;
     brand?: string;
     description?: {
         short?: string;
@@ -16,28 +17,20 @@ export interface IProduct {
     };
     stock: number;
     inStock: boolean;
+    productThumb: {
+        url: string;
+        alt?: string;
+    };
     images: {
         url: string;
         alt?: string;
     }[];
-    videos?: {
+    video?: {
         url: string;
         thumbnail?: string;
-    }[];
-    attributes?: {
-        color?: string[];
-        size?: string[];
-        flavor?: string[];
-        breedSize?: string[];
-        petType?: string[];
-        ageGroup?: string[];
     };
-    weightVariants?: {
-        weight: string;
-        price: number;
-        stock: number;
-        sku: string;
-    }[];
+    attributes?: {}[];
+    variants?: {}[];
     featured?: boolean;
     ratings?: {
         average: number;

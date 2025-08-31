@@ -1,0 +1,14 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.mediaRoutes = void 0;
+const express_1 = require("express");
+const media_controller_1 = require("./media.controller");
+const uploadFiles_1 = require("../../middleware/uploadFiles");
+const router = (0, express_1.Router)();
+router.post('/urlFileUpload', media_controller_1.urlFileUpload);
+router.post('/manuallyImageUpload', uploadFiles_1.uploadImage.single("file"), media_controller_1.manualFileUpload);
+router.post('/manuallyVideoUpload', uploadFiles_1.uploadVideo.single("file"), media_controller_1.manualFileUpload);
+router.get("/:type/:fileName", media_controller_1.getMediaFile);
+router.get("/images", media_controller_1.getAllImage);
+router.get("/videos", media_controller_1.getAllVideo);
+exports.mediaRoutes = router;
