@@ -1,12 +1,13 @@
 import { model, Schema } from "mongoose";
 import { IOrder } from "./order.interface";
+import { any } from "zod";
 
 const OrderSchema = new Schema<IOrder>(
     {
         user: {
             type: Schema.Types.ObjectId,
             ref: "User",
-            required: true,
+            required: false,
         },
         orderNumber: {
             type: String,
@@ -15,32 +16,45 @@ const OrderSchema = new Schema<IOrder>(
         },
         items: [
             {
-                product: {
+                productId: {
                     type: Schema.Types.ObjectId,
                     ref: "Product",
                     required: true,
                 },
-                title: String,
-                sku: String,
+
                 quantity: { type: Number, required: true },
-                price: { type: Number, required: true },
-                weightVariant: {
-                    weight: String,
-                    price: Number,
-                },
-                image: String,
+                variations: {
+                    type: any,
+                    required: false
+                }
             },
         ],
         shippingAddress: {
-            fullName: String,
+            fullName: {
+                type: String,
+                reqired: true
+            },
             phone: String,
-            email: String,
-            addressLine1: String,
-            addressLine2: String,
-            city: String,
-            state: String,
-            postalCode: String,
-            country: String,
+            email: {
+                type: String,
+                reqired: true
+            },
+            address: {
+                type: String,
+                reqired: true
+            },
+            city: {
+                type: String,
+                reqired: true
+            },
+            state: {
+                type: String,
+                reqired: true
+            },
+            postalCode: {
+                type: String,
+                reqired: true
+            },
         },
         paymentMethod: {
             type: String,
@@ -56,23 +70,11 @@ const OrderSchema = new Schema<IOrder>(
             enum: ["processing", "shipped", "delivered", "cancelled", "returned"],
             default: "processing",
         },
-        subtotal: {
-            type: Number,
-            required: true,
-        },
         shippingFee: {
             type: Number,
             default: 0,
         },
-        total: {
-            type: Number,
-            required: true,
-        },
         couponCode: String,
-        discount: {
-            type: Number,
-            default: 0,
-        },
         notes: {
             type: String,
         },

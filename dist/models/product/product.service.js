@@ -81,7 +81,8 @@ const getAllProductIntoDb = (_a) => __awaiter(void 0, [_a], void 0, function* ({
         badge: 1,
         inStock: 1,
         categories: 1,
-        description: 1
+        description: 1,
+        variants: 1
     });
     const productsBrands = yield product_model_1.Product.aggregate([
         {
@@ -217,7 +218,8 @@ const getFeaturedProductsIntoDb = (_a) => __awaiter(void 0, [_a], void 0, functi
         productThumb: 1,
         badge: 1,
         inStock: 1,
-        categories: 1
+        categories: 1,
+        variations: 1
     });
     const productsBrands = yield product_model_1.Product.aggregate([
         {

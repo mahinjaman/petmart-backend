@@ -12,7 +12,10 @@ const path_1 = __importDefault(require("path"));
 const app = (0, express_1.default)();
 // middleware
 app.use(express_1.default.json());
-app.use((0, cors_1.default)({ origin: ["http://localhost:8080", "http://localhost:8081", "https://petmartsonline.netlify.app"], credentials: true }));
+app.use((0, cors_1.default)({
+    origin: ["http://localhost:8080", "http://localhost:8081", "https://petmartsonline.netlify.app"],
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"], credentials: true
+}));
 app.use(express_1.default.urlencoded({ extended: true }));
 app.get('/', (req, res) => {
     res.send({ message: "Alhamdulillah server is running" });
