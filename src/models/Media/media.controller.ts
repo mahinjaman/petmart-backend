@@ -188,7 +188,7 @@ export const manualFileUpload = catchAsync(async (req: Request, res: Response) =
 export const getMediaFile = catchAsync(async (req: Request, res: Response) => {
     const { type, fileName } = req.params;
 
-    if (!["image", "video"].includes(type)) {
+    if (!["image", "video"].includes(type as string)) {
         return sendResponse(res, {
             message: "Invalid media type",
             success: false,
@@ -208,7 +208,7 @@ export const getMediaFile = catchAsync(async (req: Request, res: Response) => {
     }
 
     const folderPath = path.join(__dirname, `../../upload/${type}s`);
-    const filePath = path.join(folderPath, fileName);
+    const filePath = path.join(folderPath, fileName as string);
 
     if (!fs.existsSync(filePath)) {
         return sendResponse(res, {

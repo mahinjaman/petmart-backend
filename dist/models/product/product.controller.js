@@ -35,6 +35,7 @@ const product_service_1 = require("./product.service");
 exports.getAllProduct = (0, catchAsync_1.catchAsync)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { page, limit, search, categories, sort, brand } = req.query;
     const filterCategories = categories && categories.split(",");
+    console.log(search);
     const pareseedPage = parseInt(page);
     const pareseedLimit = parseInt(limit);
     if (isNaN(pareseedPage) || isNaN(pareseedLimit)) {
@@ -49,7 +50,7 @@ exports.getAllProduct = (0, catchAsync_1.catchAsync)((req, res) => __awaiter(voi
         return (0, sendResponse_1.sendResponse)(res, {
             success: true,
             statusCode: 200,
-            message: "search input must be within 70 characters!",
+            message: "search input must be within 70 chearecters!",
             data: null
         });
     }
