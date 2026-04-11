@@ -10,7 +10,10 @@ const app = express();
 
 // middleware
 app.use(express.json());
-app.use(cors({ origin: ["http://localhost:8080", "http://localhost:8081", "https://petmartsonline.netlify.app"], credentials: true }));
+app.use(cors({
+    origin: ["http://localhost:8080", "http://localhost:8081", "https://petmartsonline.netlify.app"],
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"], credentials: true
+}));
 app.use(express.urlencoded({ extended: true }));
 
 app.get('/', (req: Request, res: Response) => {

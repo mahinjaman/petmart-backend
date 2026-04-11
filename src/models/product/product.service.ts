@@ -83,7 +83,8 @@ export const getAllProductIntoDb = async ({ page, limit, search, categories, sor
         badge: 1,
         inStock: 1,
         categories: 1,
-        description: 1
+        description: 1,
+        variants: 1
     });
     const productsBrands = await Product.aggregate([
         {
@@ -239,7 +240,8 @@ export const getFeaturedProductsIntoDb = async ({ page, limit, search, categorie
         productThumb: 1,
         badge: 1,
         inStock: 1,
-        categories: 1
+        categories: 1,
+        variations: 1
     });
     const productsBrands = await Product.aggregate([
         {
