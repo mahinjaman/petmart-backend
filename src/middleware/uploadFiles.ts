@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 import multer, { FileFilterCallback, StorageEngine } from "multer";
 import path from "path";
 import { Request } from "express";
@@ -53,3 +54,10 @@ export const uploadVideo = multer({
     storage: createStorage("videos"),
     fileFilter: createFileFilter(ALLOWED_VIDEO_MIME_TYPES),
 });
+=======
+import multer from "multer"
+const uploadDir = "./../"
+export const uploadThumbnail = multer({
+    dest: uploadDir,
+})
+>>>>>>> 0a64625 (update product service)
