@@ -35,6 +35,7 @@ const product_service_1 = require("./product.service");
 exports.getAllProduct = (0, catchAsync_1.catchAsync)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { page, limit, search, categories, sort, brand } = req.query;
     const filterCategories = categories && categories.split(",");
+    console.log(search);
     const pareseedPage = parseInt(page);
     const pareseedLimit = parseInt(limit);
     if (isNaN(pareseedPage) || isNaN(pareseedLimit)) {
@@ -45,11 +46,11 @@ exports.getAllProduct = (0, catchAsync_1.catchAsync)((req, res) => __awaiter(voi
             data: null
         });
     }
-    if (search && search.length > 20) {
+    if (search && search.length > 70) {
         return (0, sendResponse_1.sendResponse)(res, {
             success: true,
             statusCode: 200,
-            message: "search input must be within 20 chearecters!",
+            message: "search input must be within 70 chearecters!",
             data: null
         });
     }
@@ -190,11 +191,11 @@ exports.getFeaturedProducts = (0, catchAsync_1.catchAsync)((req, res) => __await
             data: null
         });
     }
-    if (search && search.length > 20) {
+    if (search && search.length > 70) {
         return (0, sendResponse_1.sendResponse)(res, {
             success: true,
             statusCode: 200,
-            message: "search input must be within 20 chearecters!",
+            message: "search input must be within 70 characters!",
             data: null
         });
     }

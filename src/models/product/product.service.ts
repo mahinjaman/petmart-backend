@@ -27,32 +27,18 @@ export const getAllProductIntoDb = async ({ page, limit, search, categories, sor
     const searchRegex = new RegExp(search, "i");
     const query: any = {};
 
-<<<<<<< HEAD
-=======
     // Search filter
->>>>>>> 0a64625 (update product service)
     if (search) {
         query.$or = [
             { title: { $regex: searchRegex } },
             { description: { $regex: searchRegex } },
-<<<<<<< HEAD
-            { brand: { $regex: brand } },
-=======
-            { brand: { $regex: searchRegex } },  // FIX: was using `brand` variable instead of `searchRegex`
->>>>>>> 0a64625 (update product service)
+            { brand: { $regex: searchRegex } },
             { tags: { $regex: searchRegex } },
             { attributes: { $regex: searchRegex } },
             { sku: { $regex: searchRegex } },
         ];
     }
 
-<<<<<<< HEAD
-    if (categories?.length) {
-        query.categories = { $all: categories };
-    }
-    let sortFields: any = {};
-
-=======
     // Brand filter (separate from search)
     if (brand) {
         query.brand = brand;
@@ -65,7 +51,6 @@ export const getAllProductIntoDb = async ({ page, limit, search, categories, sor
 
     // Sort fields
     let sortFields: any = {};
->>>>>>> 0a64625 (update product service)
     if (sort) {
         sortFields = sort.split(',').reduce((acc: any, field: any) => {
             const [key, order] = field.split(':');
@@ -74,43 +59,19 @@ export const getAllProductIntoDb = async ({ page, limit, search, categories, sor
         }, {});
     }
 
-<<<<<<< HEAD
-    let pipeline: any = [
-        { $match: query },
-        { $skip: skip },
-        { $limit: limit },
-    ]
-=======
-    // Build pipeline: match → sort → skip → limit (correct order)
     const pipeline: any[] = [
         { $match: query },
     ];
 
-    // Sort BEFORE pagination
->>>>>>> 0a64625 (update product service)
     if (Object.keys(sortFields).length > 0) {
         pipeline.push({ $sort: sortFields });
     }
 
-<<<<<<< HEAD
-    // ✅ Add pagination
-=======
-    // Pagination ONCE, after sort
->>>>>>> 0a64625 (update product service)
     pipeline.push(
         { $skip: skip },
         { $limit: limit }
     );
 
-<<<<<<< HEAD
-    if (brand) {
-        pipeline.push(
-            { $match: { brand: brand } }
-        )
-    }
-
-=======
->>>>>>> 0a64625 (update product service)
     const result = await Product.aggregate(pipeline).project({
         url: 1,
         title: 1,
@@ -121,27 +82,8 @@ export const getAllProductIntoDb = async ({ page, limit, search, categories, sor
         productThumb: 1,
         badge: 1,
         inStock: 1,
-<<<<<<< HEAD
-        categories: 1,
-        description: 1,
-        variants: 1
-    });
-    const productsBrands = await Product.aggregate([
-        {
-            $match: query
-        },
-        {
-            $group: {
-                _id: "$brand",
-                count: { $sum: 1 }
-            }
-        }
-    ]);
-    const totalCount = await Product.countDocuments(query);
-    const totalPages = Math.ceil(totalCount / limit);
-=======
-        stock: 1,       // FIX: added — frontend needs this
-        featured: 1,    // FIX: added — frontend needs this
+        stock: 1,
+        featured: 1, 
         categories: 1,
         description: 1,
         variants: 1,
@@ -155,7 +97,6 @@ export const getAllProductIntoDb = async ({ page, limit, search, categories, sor
     const totalCount = await Product.countDocuments(query);
     const totalPages = Math.ceil(totalCount / limit);
 
->>>>>>> 0a64625 (update product service)
     return { productsBrands, result, totalCount, totalPages };
 }
 
@@ -282,10 +223,6 @@ export const getFeaturedProductsIntoDb = async ({ page, limit, search, categorie
         pipeline.push({ $sort: sortFields });
     }
 
-<<<<<<< HEAD
-=======
-    // ✅ Add pagination
->>>>>>> 0a64625 (update product service)
     pipeline.push(
         { $skip: skip },
         { $limit: limit }
@@ -302,11 +239,7 @@ export const getFeaturedProductsIntoDb = async ({ page, limit, search, categorie
         badge: 1,
         inStock: 1,
         categories: 1,
-<<<<<<< HEAD
-        variations: 1
-=======
         variants: 1,
->>>>>>> 0a64625 (update product service)
     });
     const productsBrands = await Product.aggregate([
         {
@@ -326,10 +259,6 @@ export const getFeaturedProductsIntoDb = async ({ page, limit, search, categorie
 
 
 export const getIdsProductIntoDb = async (ids: string[]) => {
-<<<<<<< HEAD
-
-=======
->>>>>>> 0a64625 (update product service)
     const objectIds = ids.map(id => {
         try {
             return new mongoose.Types.ObjectId(id);

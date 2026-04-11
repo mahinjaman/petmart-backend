@@ -36,19 +36,26 @@ const getAllProductIntoDb = (_a) => __awaiter(void 0, [_a], void 0, function* ({
     const skip = (page - 1) * limit;
     const searchRegex = new RegExp(search, "i");
     const query = {};
+    // Search filter
     if (search) {
         query.$or = [
             { title: { $regex: searchRegex } },
             { description: { $regex: searchRegex } },
-            { brand: { $regex: brand } },
+            { brand: { $regex: searchRegex } },
             { tags: { $regex: searchRegex } },
             { attributes: { $regex: searchRegex } },
             { sku: { $regex: searchRegex } },
         ];
     }
+    // Brand filter (separate from search)
+    if (brand) {
+        query.brand = brand;
+    }
+    // Categories filter
     if (categories === null || categories === void 0 ? void 0 : categories.length) {
         query.categories = { $all: categories };
     }
+    // Sort fields
     let sortFields = {};
     if (sort) {
         sortFields = sort.split(',').reduce((acc, field) => {
@@ -57,19 +64,13 @@ const getAllProductIntoDb = (_a) => __awaiter(void 0, [_a], void 0, function* ({
             return acc;
         }, {});
     }
-    let pipeline = [
+    const pipeline = [
         { $match: query },
-        { $skip: skip },
-        { $limit: limit },
     ];
     if (Object.keys(sortFields).length > 0) {
         pipeline.push({ $sort: sortFields });
     }
-    // ✅ Add pagination
     pipeline.push({ $skip: skip }, { $limit: limit });
-    if (brand) {
-        pipeline.push({ $match: { brand: brand } });
-    }
     const result = yield product_model_1.Product.aggregate(pipeline).project({
         url: 1,
         title: 1,
@@ -80,20 +81,15 @@ const getAllProductIntoDb = (_a) => __awaiter(void 0, [_a], void 0, function* ({
         productThumb: 1,
         badge: 1,
         inStock: 1,
+        stock: 1,
+        featured: 1,
         categories: 1,
         description: 1,
-        variants: 1
+        variants: 1,
     });
     const productsBrands = yield product_model_1.Product.aggregate([
-        {
-            $match: query
-        },
-        {
-            $group: {
-                _id: "$brand",
-                count: { $sum: 1 }
-            }
-        }
+        { $match: query },
+        { $group: { _id: "$brand", count: { $sum: 1 } } }
     ]);
     const totalCount = yield product_model_1.Product.countDocuments(query);
     const totalPages = Math.ceil(totalCount / limit);
@@ -219,7 +215,7 @@ const getFeaturedProductsIntoDb = (_a) => __awaiter(void 0, [_a], void 0, functi
         badge: 1,
         inStock: 1,
         categories: 1,
-        variations: 1
+        variants: 1,
     });
     const productsBrands = yield product_model_1.Product.aggregate([
         {

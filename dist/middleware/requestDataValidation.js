@@ -5,6 +5,7 @@ const AppError_1 = require("../error/AppError");
 const requestDataValidation = (validationSchema) => {
     return (req, res, next) => {
         const data = req.body;
+        console.log(data);
         if (!data) {
             return next(new AppError_1.AppError(400, 'Product data is required'));
         }
@@ -14,6 +15,7 @@ const requestDataValidation = (validationSchema) => {
             next();
         }
         catch (error) {
+            console.log(error);
             return next(new AppError_1.AppError(422, 'Validation failed', error));
         }
     };
