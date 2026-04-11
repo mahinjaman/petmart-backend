@@ -1,33 +1,53 @@
 {
+<<<<<<< HEAD
   "name": "petmarts-backend",
+=======
+  "name": "petmart-backend",
+>>>>>>> 0a64625 (update product service)
   "version": "1.0.0",
   "main": "index.js",
   "license": "MIT",
   "scripts": {
+<<<<<<< HEAD
     "dev": "ts-node-dev --respawn --transpile-only src/server.ts",
+=======
+    "dev": "set NODE_OPTIONS=--dns-result-order=ipv4first && ts-node-dev --respawn --transpile-only src/server.ts",
+>>>>>>> 0a64625 (update product service)
     "build": "tsc",
     "start": "node dist/server.js"
   },
   "dependencies": {
     "@types/multer": "^2.0.0",
+<<<<<<< HEAD
     "add": "^2.0.6",
+=======
+>>>>>>> 0a64625 (update product service)
     "axios": "^1.11.0",
     "cors": "^2.8.5",
     "dotenv": "^17.2.0",
     "express": "^5.1.0",
+<<<<<<< HEAD
     "global": "^4.4.0",
     "mongoose": "^8.16.4",
     "multer": "^2.0.2",
     "typescript": "^5.8.3",
     "vercel": "^46.1.1",
     "yarn": "^1.22.22",
+=======
+    "mongoose": "7.6.3",
+    "multer": "^2.0.2",
+    "typescript": "^5.8.3",
+>>>>>>> 0a64625 (update product service)
     "zod": "^4.0.5"
   },
   "devDependencies": {
     "@types/axios": "^0.14.4",
     "@types/cors": "^2.8.19",
     "@types/express": "^5.0.3",
+<<<<<<< HEAD
     "@types/mime-types": "^3.0.1",
+=======
+>>>>>>> 0a64625 (update product service)
     "@types/node": "^24.0.14",
     "ts-node-dev": "^2.0.0"
   }

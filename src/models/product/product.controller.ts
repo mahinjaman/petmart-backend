@@ -83,7 +83,11 @@ export const getSpecificProductData = catchAsync(async (req: Request, res: Respo
             data: null
         })
     }
+<<<<<<< HEAD
     const result = await getSpecificProductDataIntoDb(req?.params?.url);
+=======
+    const result = await getSpecificProductDataIntoDb(req?.params?.url as string);
+>>>>>>> 0a64625 (update product service)
     sendResponse(res, {
         success: true,
         statusCode: 200,
@@ -124,7 +128,11 @@ export const updateProductData = catchAsync(async (req: Request, res: Response) 
         })
     }
     const updateData = req.body;
+<<<<<<< HEAD
     const result = updateProductDataIntoDb(productId, updateData);
+=======
+    const result = updateProductDataIntoDb(productId as string, updateData);
+>>>>>>> 0a64625 (update product service)
     if (!req.query.productId) {
         sendResponse(res, {
             success: true,

@@ -1,7 +1,12 @@
 import mongoose from "mongoose"
 import config from "./config";
 import app from "./app";
+<<<<<<< HEAD
 
+=======
+import dns from 'node:dns';
+dns.setDefaultResultOrder('ipv4first');
+>>>>>>> 0a64625 (update product service)
 main().catch(err => console.log(err));
 
 async function main() {
